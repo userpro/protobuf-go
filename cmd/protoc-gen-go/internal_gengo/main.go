@@ -59,6 +59,9 @@ var (
 	protoregistryPackage goImportPath = protogen.GoImportPath("google.golang.org/protobuf/reflect/protoregistry")
 )
 
+// Third-part library
+var swissMapPackage goImportPath = protogen.GoImportPath("github.com/dolthub/swiss")
+
 type goImportPath interface {
 	String() string
 	Ident(string) protogen.GoIdent
@@ -676,7 +679,7 @@ func fieldGoType(g *protogen.GeneratedFile, f *fileInfo, field *protogen.Field) 
 	case field.Desc.IsMap():
 		keyType, _ := fieldGoType(g, f, field.Message.Fields[0])
 		valType, _ := fieldGoType(g, f, field.Message.Fields[1])
-		return fmt.Sprintf("map[%v]%v", keyType, valType), false
+		return fmt.Sprintf("*%s[%v, %v]", g.QualifiedGoIdent(swissMapPackage.Ident("Map")), keyType, valType), false
 	}
 	return goType, pointer
 }
