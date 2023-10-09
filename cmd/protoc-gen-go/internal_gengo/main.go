@@ -60,7 +60,10 @@ var (
 )
 
 // Third-part library
-var swissMapPackage goImportPath = protogen.GoImportPath("github.com/dolthub/swiss")
+var (
+	swissMapPackage   goImportPath = protogen.GoImportPath("github.com/userpro/swiss")
+	linearPoolPackage goImportPath = protogen.GoImportPath("github.com/userpro/linearpool")
+)
 
 type goImportPath interface {
 	String() string
@@ -329,6 +332,25 @@ func genMessage(g *protogen.GeneratedFile, f *fileInfo, m *messageInfo) {
 	leadingComments := appendDeprecationSuffix(m.Comments.Leading,
 		m.Desc.ParentFile(),
 		m.Desc.Options().(*descriptorpb.MessageOptions).GetDeprecated())
+
+	// Wrapper
+	g.P(leadingComments,
+		"type ", m.GoIdent, "Wrapper struct {")
+	g.P("ac *", linearPoolPackage.Ident("Allocator"))
+	g.P("raw *", m.GoIdent)
+	g.P("}")
+	g.P()
+	// Wrapper's Allocator method.
+	g.P("func (x *", m.GoIdent, "Wrapper) Allocator() ", "*", linearPoolPackage.Ident("Allocator"), " {")
+	g.P("return x.ac")
+	g.P("}")
+	g.P()
+	// Wrapper's Raw method.
+	g.P("func (x *", m.GoIdent, "Wrapper) Raw() ", "*", m.GoIdent, " {")
+	g.P("return x.raw")
+	g.P("}")
+	g.P()
+
 	g.P(leadingComments,
 		"type ", m.GoIdent, " struct {")
 	genMessageFields(g, f, m)
