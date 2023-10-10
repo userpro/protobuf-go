@@ -351,6 +351,11 @@ func genMessage(g *protogen.GeneratedFile, f *fileInfo, m *messageInfo) {
 	g.P("}")
 	g.P()
 
+	g.P("func (x *", m.GoIdent, "Wrapper) SetRaw(v *", m.GoIdent, ") ", " {")
+	g.P("x.raw = v")
+	g.P("}")
+	g.P()
+
 	g.P(leadingComments,
 		"type ", m.GoIdent, " struct {")
 	genMessageFields(g, f, m)
@@ -542,10 +547,10 @@ func genMessageBaseMethods(g *protogen.GeneratedFile, f *fileInfo, m *messageInf
 	g.P()
 
 	// String method.
-	g.P("func (x *", m.GoIdent, ") String() string {")
-	g.P("return ", protoimplPackage.Ident("X"), ".MessageStringOf(x)")
-	g.P("}")
-	g.P()
+	// g.P("func (x *", m.GoIdent, ") String() string {")
+	// g.P("return ", protoimplPackage.Ident("X"), ".MessageStringOf(x)")
+	// g.P("}")
+	// g.P()
 
 	// ProtoMessage method.
 	g.P("func (*", m.GoIdent, ") ProtoMessage() {}")
