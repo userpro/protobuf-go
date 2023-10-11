@@ -345,6 +345,10 @@ func genMessage(g *protogen.GeneratedFile, f *fileInfo, m *messageInfo) {
 	g.P("return x.ac")
 	g.P("}")
 	g.P()
+	g.P("func (x *", m.GoIdent, "Wrapper) SetAllocator(ac ", "*", linearPoolPackage.Ident("Allocator"), ") ", " {")
+	g.P("x.ac = ac")
+	g.P("}")
+	g.P()
 	// Wrapper's Raw method.
 	g.P("func (x *", m.GoIdent, "Wrapper) Raw() ", "*", m.GoIdent, " {")
 	g.P("return x.raw")
